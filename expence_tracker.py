@@ -2,7 +2,7 @@
 #  Ask user to enter the name of the pruduct to be purchased
 # Ask the user to enter the amount for the product
 # Create a list and store the expense category
-# Select the category of expenses from the list 
+# Select the category of expenses from the list
 # Create a while loop for the category selection
 
 import csv
@@ -10,73 +10,60 @@ import csv
 
 def add_expense(expense):
 
-    print("Welcome to expenses tracker")
-
-    
-
+    print("Welcome to expenses tracker \n")
 
     while True:
 
         add_expense = input("Do you want to add an expense? yes/no: ").lower()
-        
 
         if add_expense == "yes":
             product_input = input("Enter your description: ")
             amount_input = float(input("Enter the amount: $"))
 
-            expense_category = [
-                    "🍲Food",
-                    "🌆Work",
-                    "🤑Utilities",
-                    "🏠Rent",
-                    "🪁Fun",
-                    "📳Misceleneous",
-                ]
-            
-                           
-            for i, value in enumerate(expense_category):
-              print(f"{i + 1}. {value}")
 
-                     
-            value = int(input("Select category: ")) - 1
+            print("==LIST OF CATEGORIES==")
+            expense_category = [
+                "🍲Food",
+                "🌆Work",
+                "🤑Utilities",
+                "🏠Rent",
+                "🪁Fun",
+                "📳Misceleneous"
+            ]
+
+            for i, value in enumerate(expense_category):
+                print(f"{i + 1}. {value}")
+
+            value = int(input("\n Select category: ")) - 1
 
             if value < 0 or value >= len(expense_category):
-                    print("Enter numer from 1-6")
-                    continue
+                print("Enter numer from 1-6")
+                continue
 
-        
-
+            
             expenses = {
                 "category": expense_category[value],
-                "description": product_input,
+                "description":  product_input,
                 "amount": amount_input
-               
-                
-                                                }
+
+
+            }
             expense.append(expenses)
-            
-            
-            print(f"Expenses successfully added! {expense}")
-            
-           
+
+            print(f"Expense successfully added! {expense} \n")
+
         elif add_expense == "no":
-            print("That will be all for now, thank you for using this tracker")
-            break 
+            print("That will be all for now, thank you for using this tracker \n")
+            break
         else:
             print('Invalid choice, Enter a valid choice yes/no')
-
-           
-            
-
-expense = [] 
-
+    print("          ======SUMMARY=======       \n")
+expense = []
 
 add_expense(expense)
 
 
-
 def save_expenses(expense):
-
 
     with open("expense.csv", "w", newline="", encoding="utf-8") as file:
 
@@ -88,45 +75,37 @@ def save_expenses(expense):
 
         writer.writerows(expense)
 
+
 save_expenses(expense)
 
 
 def load_expenses():
-    # df = pd.read_csv('expense.csv', dtype={'amount': int, 'category': str, 'description': str})
 
-     #expenses = []
-     expenses = load_expenses()
- 
+    expenses = load_expenses()
 
-     add_expense(expense)
+    add_expense(expense)
 
-     save_expenses(expense)
+    save_expenses(expense)
 
-     
-     with open("expense.csv", "r", newline="", encoding="utf-8") as file:
-         reader = csv.DictReader(file)
+    with open("expense.csv", "r", newline="", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
 
-         for row in reader:
+        for row in reader:
             row["amount"] = float(row["amount"])
-                   
 
             expenses.append(row)
 
-
-        
-     return expenses 
+    return expenses
 
 
 def view_expenses(expense):
 
-     for i, store in enumerate(expense):
-
-
+    for i, store in enumerate(expense):
 
         print(f"{i + 1}. {store}")
-    
 
-view_expenses(expense)   
+
+view_expenses(expense)
 
 
 def total_expense(expense):
@@ -135,13 +114,12 @@ def total_expense(expense):
 
     for i in expense:
 
-      
-         total += i["amount"]
+        total += i["amount"]
 
     return total
 
-     
-print(f"Total Expenditure = {total_expense(expense)}") 
+
+print(f"Total Amount = {total_expense(expense)} \n")
 
 
 def spend_by_category(expense):
@@ -149,77 +127,37 @@ def spend_by_category(expense):
     sort_category = {}
 
     for i in expense:
-        if i["category"] in sort_category: 
+        if i["category"] in sort_category:
             sort_category[i["category"]] += i["amount"]
         else:
             sort_category[i["category"]] = i["amount"]
 
-
     return sort_category
-print(f"Add by category = {spend_by_category(expense)}")
- 
-            
 
 
+print(f"Total of each category = {spend_by_category(expense)} \n")
 
 
+def delete_expense():
+
+    print("     ==SELECT EXPENSE TO REMOVE==     ")
+    view_expenses(expense)
+    while True:
+        choice = int(input("Choose the expenses number to remove: ")) - 1
+        if choice < 0 or choice >= len(expense):
+            print("Enter a valid number.")
+            continue
+        break
+
+    expense.pop(choice)
+    print("Expenses successfully removed! \n")
+
+    print("     ==REMAINING EXPENSE LIST==     ")
+    view_expenses(expense)
+
+    save_expenses(expense)
+
+    return expense
 
 
-
-
-    
-
-
-
-
-
-        
-
-
-
-
-         
-   
-
-
-
-
-
-
-
-   
-
-
-        
-
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-# def delete_expense():
-
-
-        
-
-
-
-
-    
-    
-
-
-
-
+delete_expense()
