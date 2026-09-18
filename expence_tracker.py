@@ -137,9 +137,11 @@ def total_expense(expense):
 
       
          total += i["amount"]
-    return total  
-   
-print(f"Total Expenditure = {total_expense(expense)}")  
+
+    return total
+
+     
+print(f"Total Expenditure = {total_expense(expense)}") 
 
 
 def spend_by_category(expense):
@@ -147,8 +149,15 @@ def spend_by_category(expense):
     sort_category = {}
 
     for i in expense:
-        sort_category += expense["category"]
-        if expense["category"] == sort_category:
+        if i["category"] in sort_category: 
+            sort_category[i["category"]] += i["amount"]
+        else:
+            sort_category[i["category"]] = i["amount"]
+
+
+    return sort_category
+print(f"Add by category = {spend_by_category(expense)}")
+ 
             
 
 
