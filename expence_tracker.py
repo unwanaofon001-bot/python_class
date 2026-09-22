@@ -6,6 +6,7 @@
 # Create a while loop for the category selection
 
 import csv
+import json
 
 
 def add_expense(expense):
@@ -19,6 +20,7 @@ def add_expense(expense):
         if add_expense == "yes":
             product_input = input("Enter your description: ")
             amount_input = float(input("Enter the amount: $"))
+            print("\n")
 
 
             print("==LIST OF CATEGORIES==")
@@ -57,7 +59,7 @@ def add_expense(expense):
             break
         else:
             print('Invalid choice, Enter a valid choice yes/no')
-    print("          ======SUMMARY=======       \n")
+    print("          ======SUMMARY=======        ")
 expense = []
 
 add_expense(expense)
@@ -161,3 +163,20 @@ def delete_expense():
 
 
 delete_expense()
+
+def jas_format(expense):
+
+    print("\n         =====JSON FORMAT=====          ")
+
+
+    
+    for i in range(len(expense)):
+       
+        store = json.dumps(expense[i], ensure_ascii=False)
+
+        print(f"{i + 1}. {store}")
+
+
+
+jas_format(expense)
+
