@@ -1,3 +1,5 @@
+from datetime import datetime
+
 task = []
 
 
@@ -46,40 +48,6 @@ def task_manager():
         else:
             print("invalid input: enter(1-6)")                  
 
-
-# task = [
-#     { 
-#       "title": "Weekly Sales Report",
-#       "client": "ABC company",
-#       "recipient": "The Manager",
-#       "status": "Pending",
-#       "priority": "High",
-#       "due_date": "20-09-2026"
-#     },
- 
-#     { 
-#       "title": "Daily Sales Report",
-#       "client": "Food company",
-#       "recipient": "The HR",
-#       "status": "Pending",
-#       "priority": "High",
-#       "due_date": "21-09-2026"
-#     },
- 
-#     { 
-#       "title": "Monthly Sales Report",
-#       "client": "Tax company",
-#       "recipient": "The Manager",
-#       "status": "Completed",
-#       "priority": "High",
-#       "due_date": "23-09-2026"
-#     }
-# ]
-
-for items in range(len(task)):
-    print(f"{items + 1}. {task[items]}")
-    print("\n")
-
 def view_task(task):
     if len(task) == 0:
         print("\nTask not available \n")
@@ -90,8 +58,8 @@ def view_task(task):
                 f"Client: {task[i]['client']}\n"
                 f"Recipient: {task[i]['recipient']}\n" 
                 f"Status: {task[i]['status']}\n"
-                f"Priority: {task[i]["priority"]}\n"
-                f"Due Date: {task[i]["due_date"]}\n")
+                f"Priority: {task[i]['priority']}\n"
+                f"Due Date: {task[i]['due_date']}\n")
     
 
 def add_task(task):
@@ -100,63 +68,57 @@ def add_task(task):
     print("=" *25)
 
     while True: 
-        print("\n")
-        add_request = input("Do you want to add task? y/n: ").lower()
-        print("\n")
-
-
-        if add_request == "y":
-            while True:
-                title = input("Enter Title: ").strip()
-                if title == "":
-                    print("Title cannot be empty")
-                    continue
-                break
-            while True:    
-                client = input("Enter Client: ").strip()
-                if client == "":
-                    print("Client cannot be empty")
-                    continue
-                break
-            while True:
-                recipient = input("Enter Recipient: ").strip()
-                if recipient == "":
-                    print("Recipient cannot be empty")
-                    continue
-                break
-            while True:
-                priority = input("Enter Priority: ").strip()
-                if priority == "":
-                    print("Priority cannot be empty")
-                    continue
-                if priority in["high", "medium", "low"]:
-                    priority = priority.capitalize()
-                    print(priority)
-                else:
-                    print("Invalid priority, choose (high, medium or low)")
-                    continue
-                break
-                    
-            due_date = (input("Enter Due Date dd-mm-yy: "))
+            print("\n")
+            add_request = input("Do you want to add task? y/n: ").lower()
             print("\n")
 
-            task_list = {
-                "title": title,
-                "client": client,
-                "recipient": recipient,
-                "status": "Pending",
-                "priority": priority,
-                "due_date": due_date
-            }
+            if add_request == "y":
 
-            task.append(task_list)
-        elif add_request == "n":
-            print("Thank for using this task manager \n") 
-            break
-        else:
-            print("Invalid input: Enter y/n") 
-           
-          
+                while True:
+                    title = input("Enter Title: ").strip()
+                    if title == "":
+                        print("Title cannot be empty")
+                        continue
+                    break
+                while True:    
+                    client = input("Enter Client: ").strip()
+                    if client == "":
+                        print("Client cannot be empty")
+                        continue
+                    break
+                while True:
+                    recipient = input("Enter Recipient: ").strip()
+                    if recipient == "":
+                        print("Recipient cannot be empty")
+                        continue
+                    break
+                while True:  
+                    due_date = (input("Enter Due Date dd-mm-yyyy: ")).strip()
+                    if due_date == "":
+                        print("Due Date cannot be empty")
+                        continue
+                    try:      
+                        datetime.strptime(due_date,"%d-%m-%Y")
+                    except ValueError:        
+                        print("Invalid input: Enter dd-mm-yyyy")
+                        continue
+                    break    
+
+                task_list = {
+                    "title": title,
+                    "client": client,
+                    "recipient": recipient,
+                    "status": "Pending",
+                    "priority": get_priority(),
+                    "due_date": due_date
+                }
+
+                task.append(task_list)
+            elif add_request == "n":
+                print("Thank you for using this task manager \n") 
+                break
+            else:
+                print("Invalid input: Enter y/n")             
 
 def completed_task():
 
@@ -180,8 +142,6 @@ def completed_task():
             continue
         break
 
-
-
     if task[complete_choice]["status"] == "Pending":
         task[complete_choice]["status"] = "Completed"
     else:
@@ -189,8 +149,6 @@ def completed_task():
 
         
     view_task(task)
-
-
 
 def change_priority():
 
@@ -213,9 +171,6 @@ def change_priority():
          print("Number out of range")    
          continue
           
-    
-        
-
         change = input("Enter new priority: ").lower()
         if change in["high", "medium", "low"]:
             change = change.capitalize()
@@ -228,9 +183,6 @@ def change_priority():
 
     view_task(task) 
           
-  
-                    
-
 
 def delete_task():
 
@@ -267,25 +219,26 @@ def delete_task():
             print("Invalid input: Enter y/n \n")
             continue
            
-                    
-
     print("=" *35)
     print("|    TASK LIST AFTER DELETE      |")
     print("=" *35)
 
     view_task(task)
 
-   
+def get_priority():
 
-
+     while True:
+            priority = input("Enter Priority: ").strip()
+            if priority == "":
+                print("Priority cannot be empty")
+                continue
+            if priority in["high", "medium", "low"]:
+                priority = priority.capitalize()
+            else:
+                print("Invalid priority, choose (high, medium or low)")
+                continue
+            return priority
 
 
 main()
-
-
-
-
-
-
-
 
