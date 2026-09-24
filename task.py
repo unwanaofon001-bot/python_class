@@ -60,7 +60,7 @@ def view_task(task):
                 f"Status: {task[i]['status']}\n"
                 f"Priority: {task[i]['priority']}\n"
                 f"Due Date: {task[i]['due_date']}\n")
-    
+                
 
 def add_task(task):
     print("=" *25)
@@ -73,52 +73,49 @@ def add_task(task):
             print("\n")
 
             if add_request == "y":
+                
 
-                while True:
-                    title = input("Enter Title: ").strip()
-                    if title == "":
-                        print("Title cannot be empty")
-                        continue
-                    break
-                while True:    
-                    client = input("Enter Client: ").strip()
-                    if client == "":
-                        print("Client cannot be empty")
-                        continue
-                    break
-                while True:
-                    recipient = input("Enter Recipient: ").strip()
-                    if recipient == "":
-                        print("Recipient cannot be empty")
-                        continue
-                    break
-                while True:  
-                    due_date = (input("Enter Due Date dd-mm-yyyy: ")).strip()
-                    if due_date == "":
-                        print("Due Date cannot be empty")
-                        continue
-                    try:      
-                        datetime.strptime(due_date,"%d-%m-%Y")
-                    except ValueError:        
-                        print("Invalid input: Enter dd-mm-yyyy")
-                        continue
-                    break    
+                title = get_required_text("Title").capitalize()
+                client = get_required_text("Client").capitalize()
+                recipient = get_required_text("Recipient").capitalize()
+                priority = get_priority()
+                due_date = get_due_date()
 
-                task_list = {
-                    "title": title,
-                    "client": client,
-                    "recipient": recipient,
-                    "status": "Pending",
-                    "priority": get_priority(),
-                    "due_date": due_date
-                }
-
-                task.append(task_list)
+                new_list = create_task(title, client, recipient, priority, due_date)
+                task.append(new_list)
+            
+                
             elif add_request == "n":
                 print("Thank you for using this task manager \n") 
                 break
             else:
-                print("Invalid input: Enter y/n")             
+                print("Invalid input: Enter y/n") 
+
+
+def get_required_text(field_name):
+
+    while True:
+            user_input = input(f"Enter {field_name}: ").strip()
+            if user_input == "":
+                print(f"{field_name} cannot be empty")
+                continue
+            return user_input
+
+def create_task(title, client, recipient, priority, due_date):
+   
+
+    task_list = {
+
+        "title": title,
+        "client": client,
+        "recipient": recipient,
+        "status": "Pending",
+        "priority": priority,
+        "due_date": due_date
+    }    
+    return task_list
+
+        
 
 def completed_task():
 
@@ -238,6 +235,23 @@ def get_priority():
                 print("Invalid priority, choose (high, medium or low)")
                 continue
             return priority
+
+def get_due_date():
+
+    while True:  
+            due_date = (input("Enter Due Date dd-mm-yyyy: ")).strip()
+            if due_date == "":
+                print("Due Date cannot be empty")
+                continue
+            try:      
+                datetime.strptime(due_date,"%d-%m-%Y")
+            except ValueError:        
+                print("Invalid input: Enter dd-mm-yyyy")
+                continue
+            return due_date
+           
+
+
 
 
 main()
