@@ -249,8 +249,19 @@ def get_due_date():
                 print("Invalid input: Enter dd-mm-yyyy")
                 continue
             return due_date
-           
 
+def get_index(task):
+    while True:
+        try:
+            store_idx = int(input("Enter number: ")) -1
+        except ValueError:
+            print("invalid Input")
+            continue
+
+        if store_idx < 0 or store_idx >= len(task):
+            print("Number out of range")
+            continue
+        return store_idx        
 
 
 
