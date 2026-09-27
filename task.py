@@ -1,9 +1,12 @@
 from datetime import datetime
+import json
 
 task = []
 
 
 def main():
+    global task
+    task = load_task()
     task_manager()
     
 
@@ -20,13 +23,14 @@ def task_manager():
                 "Completed Task",
                 "Change Priority",
                 "Delete Task",
+                "Clear Task",
                 "Exit"
             ]
         
         for i in range(len(manager)):
                 print(f"{i + 1}. {manager[i]}")
         try:
-            choice = int(input("\nchoose an option (1-6): ")) 
+            choice = int(input("\nchoose an option (1-7): ")) 
         except ValueError:
             print("Enter a number") 
             continue   
@@ -43,6 +47,8 @@ def task_manager():
         elif choice == 5:
             delete_task()
         elif choice == 6:
+            clear_task()    
+        elif choice == 7:
             print("Thank you for using this task manager")
             break
         else:
@@ -75,14 +81,16 @@ def add_task(task):
             if add_request == "y":
                 
 
-                title = get_required_text("Title").capitalize()
-                client = get_required_text("Client").capitalize()
-                recipient = get_required_text("Recipient").capitalize()
+                title = get_required_text("Title").title()
+                client = get_required_text("Client").title()
+                recipient = get_required_text("Recipient").title()
                 priority = get_priority()
                 due_date = get_due_date()
 
                 new_list = create_task(title, client, recipient, priority, due_date)
                 task.append(new_list)
+                save_task()    
+
             
                 
             elif add_request == "n":
@@ -124,28 +132,18 @@ def completed_task():
     if not task:
         print("No task to complete at the moment")
         return
-
-    while True:
+   
+    complete_choice = get_index(task)   
+    print("\n")
         
-        try:
-            complete_choice = int(input("Enter the number of the completed task: ")) -1
-        except ValueError:
-            print("Enter a valid number") 
-            continue    
-        print("\n")
-
-        if complete_choice < 0 or complete_choice >= len(task):
-            print("Enter number within range")    
-            continue
-        break
-
     if task[complete_choice]["status"] == "Pending":
         task[complete_choice]["status"] = "Completed"
+        save_task()
     else:
         print("Task is already completed \n")    
-
-        
+ 
     view_task(task)
+    
 
 def change_priority():
 
@@ -155,30 +153,24 @@ def change_priority():
         print("No task to complete at the moment")
         return
 
+    task_choice = get_index(task)
 
-    while True:
-        try:
-            task_choice = int(input("Enter the number to change the priority: ")) -1 
-        except ValueError:
-            print("Enter a valid number")
-            continue
-        print("\n")
+    print("\n")
         
-        if task_choice < 0 or task_choice >= len(task):
-         print("Number out of range")    
-         continue
-          
+    while True:   
         change = input("Enter new priority: ").lower()
         if change in["high", "medium", "low"]:
             change = change.capitalize()
             task[task_choice]["priority"] = change
+            save_task()
         else:
             print("Invalid priority, choose (high, medium or low)")
             continue
         break
     print("Priority added successfully\n")
 
-    view_task(task) 
+    view_task(task)   
+
           
 
 def delete_task():
@@ -192,35 +184,28 @@ def delete_task():
     print("=" *10)
     view_task(task)
 
+    remove = get_index(task)
+
     while True: 
-
-        try:
-            remove = int(input("Select task to delete: ")) -1
-        except ValueError:
-            print("Enter a number")
-            continue
-
-        if remove  < 0 or remove >= len(task):
-            print("Enter number within range\n")
-            continue
-  
-
         recheck = input("Are you sure you want to delete this task? y/n: ").lower()
         if recheck == "y":
             task.pop(remove)
             print("You have successfully deleted a task \n")
+            save_task()
             break
         elif recheck == "n":
-            print("Okay, now select the right task to delete \n")
+            print("Okay, now select the right task to delete \n")    
+            return
         else:            
             print("Invalid input: Enter y/n \n")
-            continue
+            
            
     print("=" *35)
     print("|    TASK LIST AFTER DELETE      |")
     print("=" *35)
 
     view_task(task)
+
 
 def get_priority():
 
@@ -256,12 +241,61 @@ def get_index(task):
             store_idx = int(input("Enter number: ")) -1
         except ValueError:
             print("invalid Input")
-            continue
+            continue  
 
         if store_idx < 0 or store_idx >= len(task):
             print("Number out of range")
             continue
-        return store_idx        
+        return store_idx
+
+
+def save_task():
+
+    with open("tasks.json", "w", encoding="utf-8") as file:
+        json.dump(task, file, indent=4)
+
+    return task
+
+def load_task():
+    try:
+        with open("tasks.json", "r", encoding="utf-8") as file:
+            load = json.load(file)
+    except FileNotFoundError:
+        print("No file available")
+        return []       
+
+    return load 
+
+def clear_task():
+        if not task:
+            print("No task to complete at the moment")
+            return
+        
+        print("=" *10)
+        print("|  LIST  |")
+        print("=" *10)
+        view_task(task)
+    
+        while True: 
+            recheck = input("Are you sure you want to delete this task? y/n: ").lower()
+            if recheck == "y":
+                task.clear()
+                print("You have successfully deleted a task \n")
+                save_task()
+                break
+            elif recheck == "n":
+                print("Okay, now select the right task to delete \n")    
+                return
+            else:            
+                print("Invalid input: Enter y/n \n")
+                        
+        print("=" *35)
+        print("|    TASK LIST AFTER DELETE      |")
+        print("=" *35)
+    
+        view_task(task)
+        
+
 
 
 
