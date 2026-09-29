@@ -1,12 +1,13 @@
 from datetime import datetime
-import json
+import sqlite3
+connection = sqlite3.connect("task.db")
 
 task = []
 
 
 def main():
     global task
-    task = load_task()
+    task = load_task_from_db()
     task_manager()
     
 
@@ -52,7 +53,7 @@ def task_manager():
             print("Thank you for using this task manager")
             break
         else:
-            print("invalid input: enter(1-6)")                  
+            print("invalid input: enter(1-7)")                  
 
 def view_task(task):
     if len(task) == 0:
@@ -67,7 +68,6 @@ def view_task(task):
                 f"Priority: {task[i]['priority']}\n"
                 f"Due Date: {task[i]['due_date']}\n")
                 
-
 def add_task(task):
     print("=" *25)
     print("        ADD TASK        ")
@@ -89,16 +89,14 @@ def add_task(task):
 
                 new_list = create_task(title, client, recipient, priority, due_date)
                 task.append(new_list)
-                save_task()    
+              
+                insert_task(title, client, recipient, priority, due_date)
 
-            
-                
             elif add_request == "n":
                 print("Thank you for using this task manager \n") 
                 break
             else:
                 print("Invalid input: Enter y/n") 
-
 
 def get_required_text(field_name):
 
@@ -122,9 +120,7 @@ def create_task(title, client, recipient, priority, due_date):
         "due_date": due_date
     }    
     return task_list
-
-        
-
+       
 def completed_task():
 
     view_task(task) 
@@ -138,13 +134,13 @@ def completed_task():
         
     if task[complete_choice]["status"] == "Pending":
         task[complete_choice]["status"] = "Completed"
-        save_task()
-    else:
+        update_task_status(task[complete_choice]["id"], "Completed")
+        
+    else: 
         print("Task is already completed \n")    
  
     view_task(task)
     
-
 def change_priority():
 
     view_task(task)
@@ -162,7 +158,8 @@ def change_priority():
         if change in["high", "medium", "low"]:
             change = change.capitalize()
             task[task_choice]["priority"] = change
-            save_task()
+            updated_priority = task[task_choice]["priority"]
+            update_task_priority_from_db(task[task_choice]["id"], updated_priority )
         else:
             print("Invalid priority, choose (high, medium or low)")
             continue
@@ -170,8 +167,6 @@ def change_priority():
     print("Priority added successfully\n")
 
     view_task(task)   
-
-          
 
 def delete_task():
 
@@ -189,9 +184,10 @@ def delete_task():
     while True: 
         recheck = input("Are you sure you want to delete this task? y/n: ").lower()
         if recheck == "y":
+            task_id = task[remove]["id"]
             task.pop(remove)
+            delete_task_from_db(task_id)
             print("You have successfully deleted a task \n")
-            save_task()
             break
         elif recheck == "n":
             print("Okay, now select the right task to delete \n")    
@@ -205,7 +201,6 @@ def delete_task():
     print("=" *35)
 
     view_task(task)
-
 
 def get_priority():
 
@@ -248,24 +243,6 @@ def get_index(task):
             continue
         return store_idx
 
-
-def save_task():
-
-    with open("tasks.json", "w", encoding="utf-8") as file:
-        json.dump(task, file, indent=4)
-
-    return task
-
-def load_task():
-    try:
-        with open("tasks.json", "r", encoding="utf-8") as file:
-            load = json.load(file)
-    except FileNotFoundError:
-        print("No file available")
-        return []       
-
-    return load 
-
 def clear_task():
         if not task:
             print("No task to complete at the moment")
@@ -277,11 +254,11 @@ def clear_task():
         view_task(task)
     
         while True: 
-            recheck = input("Are you sure you want to delete this task? y/n: ").lower()
+            recheck = input("Are you sure you want to clear this list? y/n: ").lower()
             if recheck == "y":
                 task.clear()
-                print("You have successfully deleted a task \n")
-                save_task()
+                clear_task_from_db()
+                print("You have successfully cleared the list \n")
                 break
             elif recheck == "n":
                 print("Okay, now select the right task to delete \n")    
@@ -294,9 +271,84 @@ def clear_task():
         print("=" *35)
     
         view_task(task)
-        
 
 
+connection.execute("""
+    CREATE TABLE IF NOT EXISTS tasks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT,
+        client TEXT,
+        recipient TEXT,
+        status TEXT,
+        priority TEXT,
+        due_date TEXT
+    )
+
+""")
+connection.commit()
+
+def insert_task(title, client, recipient, priority, due_date):
+
+    connection.execute(
+        """
+        INSERT INTO tasks
+        (title, client, recipient, status, priority, due_date)
+        VALUES(?, ?, ?, ?, ?, ?)
+        """,
+        (title, client, recipient, "Pending", priority, due_date))
+    connection.commit()
+
+def load_task_from_db():
+    select = connection.execute("SELECT * FROM tasks")
+    rows = select.fetchall()
+
+    store_dict = []
+
+    for i in rows:
+        task_dict = {
+            "id": i[0],
+            "title": i[1],
+            "client": i[2],
+            "recipient": i[3],
+            "status": i[4],
+            "priority": i[5],
+            "due_date": i[6]
+        }
+        store_dict.append(task_dict)
+    
+    return store_dict
+
+def update_task_status(task_id, status):
+    connection.execute("""
+        UPDATE tasks
+        SET status = ?
+        WHERE id = ?
+        """, (status, task_id))
+    connection.commit()
+
+def delete_task_from_db(task_id):
+    connection.execute(
+        """
+         DELETE FROM tasks
+         WHERE id = ?   
+        """, (task_id,))
+    connection.commit()   
+
+def clear_task_from_db():
+    connection.execute("DELETE FROM tasks")
+    connection.commit()
+
+def update_task_priority_from_db(task_id, priority):
+    connection.execute(
+        """
+        UPDATE tasks
+        SET priority = ?
+        WHERE id = ?
+
+        """, (priority, task_id))
+    connection.commit()
+
+    
 
 
 main()
