@@ -47,8 +47,6 @@ def add_expense(expense):
                 "category": expense_category[value],
                 "description":  product_input,
                 "amount": amount_input
-
-
             }
             expense.append(expenses)
 
@@ -81,7 +79,7 @@ def save_expenses(expense):
 save_expenses(expense)
 
 
-def load_expenses():
+def load_expenses(): 
 
     expenses = load_expenses()
 
@@ -175,6 +173,25 @@ def jas_format(expense):
         store = json.dumps(expense[i], ensure_ascii=False)
 
         print(f"{i + 1}. {store}")
+
+def save_task():
+
+    with open("expense.json", "w", encoding="utf-8") as file:
+        json.dump(expense, file, indent=4)
+
+    return 
+
+def load_task():
+    try:
+        with open("expense.json", "r", encoding="utf-8") as file:
+            load = json.load(file)
+    except FileNotFoundError:
+        print("No file available")
+        return []       
+
+    return load 
+
+
 
 
 

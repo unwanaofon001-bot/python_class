@@ -1,14 +1,15 @@
 from datetime import datetime
-import sqlite3
-connection = sqlite3.connect("task.db")
+import database
 
 task = []
 
 
 def main():
     global task
-    task = load_task_from_db()
+    database.create_table()
+    task = database.load_task_from_db()
     task_manager()
+
     
 
 def task_manager():
@@ -87,11 +88,16 @@ def add_task(task):
                 priority = get_priority()
                 due_date = get_due_date()
 
-                new_list = create_task(title, client, recipient, priority, due_date)
-                task.append(new_list)
+                
+                task_id = database.insert_task(title, client, recipient, priority, due_date)
+                if task_id is None:
+                    print("Task could not be added to database")
+                    return
+                else:
+                    new_list = create_task(task_id, title, client, recipient, priority, due_date)
+                    task.append(new_list)
+                    print(task)
               
-                insert_task(title, client, recipient, priority, due_date)
-
             elif add_request == "n":
                 print("Thank you for using this task manager \n") 
                 break
@@ -107,11 +113,11 @@ def get_required_text(field_name):
                 continue
             return user_input
 
-def create_task(title, client, recipient, priority, due_date):
+def create_task(task_id, title, client, recipient, priority, due_date):
    
 
     task_list = {
-
+        "id": task_id,
         "title": title,
         "client": client,
         "recipient": recipient,
@@ -133,9 +139,9 @@ def completed_task():
     print("\n")
         
     if task[complete_choice]["status"] == "Pending":
-        task[complete_choice]["status"] = "Completed"
-        update_task_status(task[complete_choice]["id"], "Completed")
-        
+        updated = database.update_task_status_from_db(task[complete_choice]["id"], "Completed") 
+        if updated == True:
+            task[complete_choice]["status"] = "Completed"         
     else: 
         print("Task is already completed \n")    
  
@@ -159,7 +165,7 @@ def change_priority():
             change = change.capitalize()
             task[task_choice]["priority"] = change
             updated_priority = task[task_choice]["priority"]
-            update_task_priority_from_db(task[task_choice]["id"], updated_priority )
+            database.update_task_priority_from_db(task[task_choice]["id"], updated_priority )
         else:
             print("Invalid priority, choose (high, medium or low)")
             continue
@@ -186,7 +192,7 @@ def delete_task():
         if recheck == "y":
             task_id = task[remove]["id"]
             task.pop(remove)
-            delete_task_from_db(task_id)
+            database.delete_task_from_db(task_id)
             print("You have successfully deleted a task \n")
             break
         elif recheck == "n":
@@ -257,7 +263,7 @@ def clear_task():
             recheck = input("Are you sure you want to clear this list? y/n: ").lower()
             if recheck == "y":
                 task.clear()
-                clear_task_from_db()
+                database.clear_task_from_db()
                 print("You have successfully cleared the list \n")
                 break
             elif recheck == "n":
@@ -272,84 +278,6 @@ def clear_task():
     
         view_task(task)
 
-
-connection.execute("""
-    CREATE TABLE IF NOT EXISTS tasks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT,
-        client TEXT,
-        recipient TEXT,
-        status TEXT,
-        priority TEXT,
-        due_date TEXT
-    )
-
-""")
-connection.commit()
-
-def insert_task(title, client, recipient, priority, due_date):
-
-    connection.execute(
-        """
-        INSERT INTO tasks
-        (title, client, recipient, status, priority, due_date)
-        VALUES(?, ?, ?, ?, ?, ?)
-        """,
-        (title, client, recipient, "Pending", priority, due_date))
-    connection.commit()
-
-def load_task_from_db():
-    select = connection.execute("SELECT * FROM tasks")
-    rows = select.fetchall()
-
-    store_dict = []
-
-    for i in rows:
-        task_dict = {
-            "id": i[0],
-            "title": i[1],
-            "client": i[2],
-            "recipient": i[3],
-            "status": i[4],
-            "priority": i[5],
-            "due_date": i[6]
-        }
-        store_dict.append(task_dict)
-    
-    return store_dict
-
-def update_task_status(task_id, status):
-    connection.execute("""
-        UPDATE tasks
-        SET status = ?
-        WHERE id = ?
-        """, (status, task_id))
-    connection.commit()
-
-def delete_task_from_db(task_id):
-    connection.execute(
-        """
-         DELETE FROM tasks
-         WHERE id = ?   
-        """, (task_id,))
-    connection.commit()   
-
-def clear_task_from_db():
-    connection.execute("DELETE FROM tasks")
-    connection.commit()
-
-def update_task_priority_from_db(task_id, priority):
-    connection.execute(
-        """
-        UPDATE tasks
-        SET priority = ?
-        WHERE id = ?
-
-        """, (priority, task_id))
-    connection.commit()
-
-    
-
-
-main()
+if __name__ == "__main__":
+    main()
 

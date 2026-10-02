@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "title": "Weekly Sales Report",
+        "client": "ABC Company",
+        "recipient": "The Manager",
+        "status": "Pending",
+        "priority": "High",
+        "due_date": "20-09-2026"
+    },
+    {
+        "id": 2,
+        "title": "Weekly Sales Report",
+        "client": "ABC Company",
+        "recipient": "The Manager",
+        "status": "Pending",
+        "priority": "High",
+        "due_date": "20-09-2026"
+    },
+    {
+        "id": 3,
+        "title": "Weekly Sales Report",
+        "client": "ABC Company",
+        "recipient": "The Manager",
+        "status": "Pending",
+        "priority": "Low",
+        "due_date": "20-09-2026"
+    },
+    {
+        "id": 4,
+        "title": "Today'S Report",
+        "client": "School",
+        "recipient": "Head Teacher",
+        "status": "Pending",
+        "priority": "Low",
+        "due_date": "30-10-2026"
+    }
+]
