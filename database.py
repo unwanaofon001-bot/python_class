@@ -9,7 +9,7 @@ def get_connection():
 def create_table():
     connection = get_connection()
     try:
-        connection.execute("""
+        connection.execute(""" 
             CREATE TABLE IF NOT EXISTS tasks (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT,
@@ -104,14 +104,22 @@ def update_task_status_from_db(task_id, status):
 def delete_task_from_db(task_id):
     connection = get_connection()
     try:
-        connection.execute(
+        cursor = connection.execute(
             """
             DELETE FROM tasks
             WHERE id = ?   
             """, (task_id,))
-        connection.commit() 
-    except sqlite3.Error as e: 
+        if cursor.rowcount == 0:
+            print("Task not found")
+            return None
+        else:
+            print("Action successfully taken")
+            connection.commit() 
+            return True
+    except sqlite3.Error as e:
+        connection.rollback() 
         print(f"Database error2: {e}")
+        return None
     finally:        
         connection.close() 
 
@@ -119,25 +127,38 @@ def clear_task_from_db():
     connection = get_connection()
     try:
         connection.execute("DELETE FROM tasks")
+    
         connection.commit()
+        return True
     except sqlite3.Error as e:
+        connection.rollback()
         print(f"Database error3: {e}")
+        return None
     finally:        
         connection.close()
 
 def update_task_priority_from_db(task_id, priority):
     connection = get_connection()
     try:
-        connection.execute(
+        cursor = connection.execute(
             """
             UPDATE tasks
             SET priority = ?
             WHERE id = ?
 
             """, (priority, task_id))
-        connection.commit()
+        if cursor.rowcount == 0:
+            print("Task not found")
+            return None
+        else:
+            print("Task updated successfully")
+            connection.commit()
+            return True    
+
     except sqlite3.Error as e:
-        print(f"Database error5: {e}") 
+        connection.rollback()
+        print(f"Database error5: {e}")
+        return None 
     finally:       
         connection.close()
 

@@ -163,14 +163,17 @@ def change_priority():
         change = input("Enter new priority: ").lower()
         if change in["high", "medium", "low"]:
             change = change.capitalize()
-            task[task_choice]["priority"] = change
-            updated_priority = task[task_choice]["priority"]
-            database.update_task_priority_from_db(task[task_choice]["id"], updated_priority )
+            updated = database.update_task_priority_from_db(task[task_choice]["id"], change )
+            if updated == True:
+                task[task_choice]["priority"] = change
+                print("Priority added successfully\n")
+            else:
+                print("Fail to update priority")    
+
         else:
             print("Invalid priority, choose (high, medium or low)")
             continue
         break
-    print("Priority added successfully\n")
 
     view_task(task)   
 
@@ -191,22 +194,25 @@ def delete_task():
         recheck = input("Are you sure you want to delete this task? y/n: ").lower()
         if recheck == "y":
             task_id = task[remove]["id"]
-            task.pop(remove)
-            database.delete_task_from_db(task_id)
-            print("You have successfully deleted a task \n")
-            break
+            delete = database.delete_task_from_db(task_id)
+            if delete == True:
+                task.pop(remove)
+                print("You have successfully deleted a task \n")
+            else:
+                print("failed to delete task")    
+                return None
         elif recheck == "n":
             print("Okay, now select the right task to delete \n")    
             return
         else:            
             print("Invalid input: Enter y/n \n")
             
-           
-    print("=" *35)
-    print("|    TASK LIST AFTER DELETE      |")
-    print("=" *35)
+            
+        print("=" *35)
+        print("|    TASK LIST AFTER DELETE      |")
+        print("=" *35)
 
-    view_task(task)
+        view_task(task)
 
 def get_priority():
 
@@ -262,12 +268,15 @@ def clear_task():
         while True: 
             recheck = input("Are you sure you want to clear this list? y/n: ").lower()
             if recheck == "y":
-                task.clear()
-                database.clear_task_from_db()
-                print("You have successfully cleared the list \n")
+                cleared = database.clear_task_from_db()
+                if cleared == True:
+                    task.clear()
+                    print("You have successfully cleared the list \n")
+                else:
+                    print("Failed to clear list")    
                 break
             elif recheck == "n":
-                print("Okay, now select the right task to delete \n")    
+                print("Okay, cleared selection is cancelled \n")    
                 return
             else:            
                 print("Invalid input: Enter y/n \n")
