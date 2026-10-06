@@ -9,9 +9,7 @@ def main():
     database.create_table()
     task = database.load_task_from_db()
     task_manager()
-
-    
-
+   
 def task_manager():
    
     while True:

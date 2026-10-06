@@ -50,7 +50,6 @@ def insert_task(title, client, recipient, priority, due_date):
     finally:        
         connection.close()
 
-
 def load_task_from_db():
     connection = get_connection()
     store_dict = []
