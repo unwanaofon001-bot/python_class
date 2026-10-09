@@ -71,6 +71,7 @@ def load_task_from_db():
             store_dict.append(task_dict)
     except sqlite3.Error as e:
         print(f"Database error6: {e}")
+        return None
     finally:            
         connection.close()
     
@@ -160,6 +161,38 @@ def update_task_priority_from_db(task_id, priority):
         return None 
     finally:       
         connection.close()
+
+def get_task_from_db(task_id):
+    connection = get_connection()
+    try:
+        select = connection.execute("""
+            SELECT * FROM tasks
+            WHERE id = ?
+            """, (task_id,))
+        row = select.fetchone()
+        if row is None:
+            print("Id not found")
+            return None 
+        else:
+            rows = {
+                "id": row[0],
+                "title": row[1],
+                "client": row[2],
+                "recipient": row[3],
+                "status": row[4],
+                "priority": row[5],
+                "due_date": row[6]
+            }
+            return rows
+
+
+    except sqlite3.Error as e:
+            print(f"Database error8: {e}")
+            return None
+    finally:            
+        connection.close()    
+        
+
 
 
  
