@@ -46,7 +46,7 @@ def insert_task(title, client, recipient, priority, due_date):
 
     except sqlite3.Error as e:
         print(f"Database error7: {e}")
-        return None
+        return "error"
     finally:        
         connection.close()
 
@@ -71,7 +71,7 @@ def load_task_from_db():
             store_dict.append(task_dict)
     except sqlite3.Error as e:
         print(f"Database error6: {e}")
-        return None
+        return "error"
     finally:            
         connection.close()
     
@@ -88,7 +88,7 @@ def update_task_status_from_db(task_id, status):
             """, (status, task_id))
         if cursor.rowcount == 0:
             print("Task not found")
-            return None
+            return "not_found"
         else:
             print("Task updated successfully")
             connection.commit()
@@ -97,7 +97,7 @@ def update_task_status_from_db(task_id, status):
     except sqlite3.Error as e: 
         connection.rollback() 
         print(f"Database error4: {e}")
-        return None
+        return "error"
     finally:  
         connection.close()
 
@@ -111,7 +111,7 @@ def delete_task_from_db(task_id):
             """, (task_id,))
         if cursor.rowcount == 0:
             print("Task not found")
-            return None
+            return "not_found"
         else:
             print("Action successfully taken")
             connection.commit() 
@@ -119,7 +119,7 @@ def delete_task_from_db(task_id):
     except sqlite3.Error as e:
         connection.rollback() 
         print(f"Database error2: {e}")
-        return None
+        return "error"
     finally:        
         connection.close() 
 
@@ -133,7 +133,7 @@ def clear_task_from_db():
     except sqlite3.Error as e:
         connection.rollback()
         print(f"Database error3: {e}")
-        return None
+        return "error"
     finally:        
         connection.close()
 
@@ -149,7 +149,7 @@ def update_task_priority_from_db(task_id, priority):
             """, (priority, task_id))
         if cursor.rowcount == 0:
             print("Task not found")
-            return None
+            return "not_found"
         else:
             print("Task updated successfully")
             connection.commit()
@@ -158,7 +158,7 @@ def update_task_priority_from_db(task_id, priority):
     except sqlite3.Error as e:
         connection.rollback()
         print(f"Database error5: {e}")
-        return None 
+        return "error" 
     finally:       
         connection.close()
 
@@ -172,7 +172,7 @@ def get_task_from_db(task_id):
         row = select.fetchone()
         if row is None:
             print("Id not found")
-            return None 
+            return "not_found" 
         else:
             rows = {
                 "id": row[0],
@@ -188,7 +188,7 @@ def get_task_from_db(task_id):
 
     except sqlite3.Error as e:
             print(f"Database error8: {e}")
-            return None
+            return "error"
     finally:            
         connection.close()    
         

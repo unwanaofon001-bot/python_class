@@ -28,7 +28,7 @@ def home():
             }), 400  
         
         task_id = database.insert_task(title, client, recipient, priority, due_date)
-        if task_id is None:
+        if task_id == "error":
             return jsonify({
                 "message": "Failed to create task",
                 "task_id": task_id
@@ -39,10 +39,10 @@ def home():
                 "task_id": task_id
                 }), 201
     tasks = database.load_task_from_db()
-    if tasks is None:
+    if tasks == "error":
         return jsonify({
             "message": "failed to load task",
-            "task": tasks
+            "tasks": tasks
         }), 500
     elif tasks == []:
         return jsonify({
@@ -52,23 +52,23 @@ def home():
     else:
         return jsonify({
             "message": "Task successfully loaded",
-            "task": tasks
+            "tasks": tasks
         }), 200
 
 @app.route("/tasks/<int:task_id>")
 def get_task(task_id):
     tasks = database.get_task_from_db(task_id)
    
-    if tasks is None:
+    if tasks == "not_found":
         return jsonify({
             "message": "task_id not found",
             "task_id": task_id
         }),404
-    elif tasks == []:
+    elif tasks == "error":
         return jsonify({
-            "message": "task is empty",
-            "task": tasks
-        }),200
+            "message": "Database error from task_id",
+            "task_id": task_id
+        }), 500
     else:
         return jsonify({
             "message": "id found successfully",
@@ -79,21 +79,96 @@ def get_task(task_id):
 def delete_task(task_id):
     task_to_del = database.delete_task_from_db(task_id)
 
-    if task_to_del is None:
+    if task_to_del == "not_found":
         return jsonify({
             "message": "task_id not found to delete",
-            "task": task_id
+            "task_id": task_id
         }), 404
+    elif task_to_del == "error":
+        return jsonify({
+            "message": "database deleting error",
+            "task_id": task_id
+        }), 500
     else:
-            return jsonify({
-                        "message": "task deleted successfully",
-                        "task": task_id
-                    }), 200
+        return jsonify({
+            "message": "task deleted successfully",
+            "task": task_id
+        }), 200
 
 @app.route("/tasks/<int:task_id>", methods=["PATCH"])
-def patch_task(task_id, status): 
-    update = database.update_task_status_from_db(task_id, status)
-    store = request.json          
+def patch_task(task_id): 
+   
+    if not request.is_json:
+        return jsonify({
+            "message": "data must be in json"
+        }), 400
+    try:
+         data = request.json
+         status = data["status"]             
+    except KeyError as error:
+          return jsonify ({
+                "message": "Field required",
+                "field": error.args[0]
+            }), 400
+    if status not in ["Pending", "Completed"]:
+        return jsonify({
+            "message": "Invalid input: select Pending or Completed.",
+
+        }), 400
+    
+
+    update = database.update_task_status_from_db(task_id, status)    
+    if update == "not_found":
+          return jsonify ({
+                "message": "id not found",
+                "task_id": task_id
+            }), 404
+    elif update == "error":
+        return jsonify ({
+                "message": "database error",
+                "task_id": task_id
+            }), 500
+    else:
+         return jsonify({
+              "message": "Status successfully updated",
+              "status": status
+         }), 200
+@app.route("/tasks/<int:task_id>/priority", methods=["PATCH"])   
+def patch_priority(task_id):
+    if not request.is_json:
+        return jsonify({
+            "message": "Enter a valid json"
+        }), 400
+    try:
+        data = request.json
+        priorities = data["priority"]
+    except KeyError as e:
+        return jsonify ({
+            "message": "Field required",
+            "field": e.args[0]
+        }), 400
+    if priorities not in["High", "Medium", "Low"]:
+         return jsonify ({
+            "message": "Enter a valid input: High,Medium or Low",
+            "task_id": task_id
+        }), 400
+    priority = database.update_task_priority_from_db(task_id, priorities)
+    if priority == "not_found":
+              return jsonify ({
+                    "message": "id not found",
+                    "task_id": task_id
+                }), 404
+    elif priority == "error":
+        return jsonify ({
+                "message": "database error while getting priority",
+                "task_id": task_id
+            }), 500
+    else:
+            return jsonify({
+                "message": "priority successfully updated",
+                "priorities": priorities
+            }), 200
+
 
 if __name__ == "__main__":
     app.run(debug=True)
