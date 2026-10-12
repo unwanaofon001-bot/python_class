@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+
 </head>
 <body>
     <header>
@@ -14,10 +16,31 @@
     <main>
         <section id="summary">
             <h2>Task Overview</h2>
+            <div>
+                <h3>Total number of tasks</h3>
+                <p id="total-count">0</p>
+            </div>
+            <div>
+                <h3>Number of pending tasks</h3>
+                <p id="pending-count">0</p>
+            </div>
+            <div>
+                <h3>Number of completed tasks</h3>
+                <p id="completed-count">0</p>
+            </div>
         </section>
         <section id="task-list">
             <h2>Your Task</h2>
-
+            <label for="status-filter">Select filter</label>
+            <select id="status-filter">
+                <option value="All">All tasks</option>
+                <option value="Pending">Pending</option>
+                <option value="Completed">Completed</option>
+            </select>
+            <div id="tasks-container">
+                    <p>Loading tasks...</p>
+            </div>
+            <script>document.getElementById("tasks-container")</script>
         </section>
     </main>
 </body>
