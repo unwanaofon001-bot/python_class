@@ -9,24 +9,26 @@
 </head>
 <body>
     <header>
-        <h1>Virtual Assistant Task Manager</h1>
+        <h1>Virtual Task Manager Platform</h1>
         <p>Organize your work and stay on top of your game</p>
     </header>
 
     <main>
         <section id="summary">
-            <h2>Task Overview</h2>
-            <div>
-                <h3>Total number of tasks</h3>
-                <p id="total-count">0</p>
-            </div>
-            <div>
-                <h3>Number of pending tasks</h3>
-                <p id="pending-count">0</p>
-            </div>
-            <div>
-                <h3>Number of completed tasks</h3>
-                <p id="completed-count">0</p>
+            <h2>Task Overview:</h2>
+            <div id="summary-cards">
+                <div class="start-card">
+                    <h3>Total number of tasks</h3>
+                    <p id="total-count">0</p>
+                </div>
+                <div class="start-card">
+                    <h3>Number of pending tasks</h3>
+                    <p id="pending-count">0</p>
+                </div>
+                <div class="start-card">
+                    <h3>Number of completed tasks</h3>
+                    <p id="completed-count">0</p>
+                </div>
             </div>
         </section>
         <section id="task-list">
@@ -40,7 +42,7 @@
             <div id="tasks-container">
                     <p>Loading tasks...</p>
             </div>
-            <script>document.getElementById("tasks-container")</script>
+            
         </section>
     </main>
 </body>
