@@ -1,8 +1,8 @@
 body {
     font-family: 'Times New Roman', Times, serif;
     margin: 0;
-    background-color: rgb(22, 21, 21);
-    color: rgb(236, 238, 236);
+    background-color: black;
+    color: white;
 }
 header {
     background-color: darkgreen;
@@ -11,19 +11,28 @@ header {
     padding: 20px;
 }
 #summary {
-    
-    gap: 20px;
-    padding: 10px; 
+    display: flex;
     color: white; 
+    justify-content: space-around;
+    gap: 20px;
+    padding: 20px;
+    flex-direction: column;
 }
 #summary-cards {
     display: flex;
     gap: 30px;
-   
+    justify-content: space-between;
+    max-width: 1000px;
+    width: 100%;
+    flex-wrap: wrap;
+      
 }
 .start-card {
     background-color: rgb(9, 158, 16);
-    border-radius: 20px;
-    padding: 5px;
+    border-radius: 15px;
+    padding: 20px;
     flex: 1;
+    
+    
+    
 }
