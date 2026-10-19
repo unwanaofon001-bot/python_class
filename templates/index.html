@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
 
 </head>
@@ -15,24 +16,38 @@
 
     <main>
         <aside id="sidebar">
-            <nav>
-                <ul>
-                    <li><a href="/" class="activate">Dashboard</a></li>
-                    <li><a href="#task-list">View Task</a></li>
-                    <li><a href="#add-task">Add Task</a></li>
-                    <li><a href="#completed-task">Completed Task</a></li>
-                    <li><a href="#delete-task">Delete Task</a></li>
-                </ul>
+            <nav>  
+                <a href="/" class="activate">
+                    <span class="material-symbols-outlined" aria-hidden="true">home</span>
+                    <span>Dashboard</span>
+                </a>
+            
+                <a href="#task-list">
+                    <span class="material-symbols-outlined" aria-hidden="true">list</span>
+                    <span>View Task</span>
+                </a>
+                <a href="#add-task">
+                    <span class="material-symbols-outlined" aria-hidden="true">add</span>
+                    <span>Add Task</span>
+                </a>
+                <a href="#completed-task">
+                    <span class="material-symbols-outlined" aria-hidden="true">list</span>
+                    <span>Completed Task</span>
+                </a>
+                <a href="#delete-task">
+                    <span class="material-symbols-outlined" aria-hidden="true">delete</span>
+                    <span>Delete Task</span>
+                </a>
             </nav>
         </aside>
+        <div class="page-content">
+            <section id="dashboard-content">
+                <h2>Dashboard</h2>
+            </section>
 
-        <section id="dashboard-content">
-            <h2>Dashboard</h2>
-            <p>Here's an overview of your tasks</p>
-        </section>
-        <section id="summary">
-            <h2>Task Overview:</h2>
-            <div id="summary-cards">
+            <section id="summary">
+                <h2>Task Overview:</h2>
+                <div id="summary-cards">
                 <div class="start-card">
                     <h3>Total number of tasks</h3>
                     <p id="total-count">0</p>
@@ -45,21 +60,148 @@
                     <h3>Number of completed tasks</h3>
                     <p id="completed-count">0</p>
                 </div>
-            </div>
-        </section>
-        <section id="task-list">
-            <h2>Your Task</h2>
-            <label for="status-filter">Select filter</label>
-            <select id="status-filter">
-                <option value="All">All tasks</option>
-                <option value="Pending">Pending</option>
-                <option value="Completed">Completed</option>
-            </select>
-            <div id="tasks-container">
-                    <p>Loading tasks...</p>
-            </div>
-            
-        </section>
+                </div>
+            </section>
+
+            <section id="add-task">
+
+                <h2>Add a New Task</h2>
+
+                <p>Create a task and assign it to a client or recipient.</p>
+
+                <form id="add-task-form">
+
+                    <div class="task-form-grid">
+
+                        <div class="form-field">
+                            <label for="task-title">Task Title</label>
+                            <input
+                                type="text"
+                                id="task-title"
+                                name="title"
+                                placeholder="Enter task title"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-field">
+                            <label for="task-client">Client</label>
+                            <input
+                                type="text"
+                                id="task-client"
+                                name="client"
+                                placeholder="Enter client name"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-field">
+                            <label for="task-recipient">Recipient</label>
+                            <input
+                                type="text"
+                                id="task-recipient"
+                                name="recipient"
+                                placeholder="Enter recipient"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-field">
+                            <label for="task-due-date">Due Date</label>
+                            <input
+                                type="date"
+                                id="task-due-date"
+                                name="due_date"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-field">
+                            <label for="task-priority">Priority</label>
+
+                            <select
+                                id="task-priority"
+                                name="priority"
+                                required
+                            >
+                                <option value="Low">Low</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="form-actions">
+
+                        <button type="submit" class="primary-button">
+                            Add Task
+                        </button>
+
+                        <button type="reset" class="secondary-button">
+                            Clear Form
+                        </button>
+
+                    </div>
+
+                    <p id="form-message" role="status" aria-live="polite"></p>
+
+                </form>
+
+            </section>
+
+            <section id="task-list">
+
+                <div class="task-heading">
+                    <div>
+                        <h2>Your Tasks</h2>
+                        <p>Manage and track all your tasks here.</p>
+                    </div>
+
+                    <a href="#add-task" id="add-task-button">
+                        <span class="material-symbols-outlined" aria-hidden="true">add</span>
+                        Add New Task
+                    </a>
+                </div>
+
+                <div class="task-controls">
+                    <label for="status-filter">Filter by status:</label>
+
+                    <select id="status-filter">
+                        <option value="All">All tasks</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+
+                <div class="table-wrapper">
+                    <table id="tasks-table">
+
+                        <thead>
+                            <tr>
+                                <th>Task Title</th>
+                                <th>Client</th>
+                                <th>Recipient</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Due Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tasks-table-body">
+                            <tr>
+                                <td colspan="7">Loading tasks...</td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+
+            </section>
+        </div>
+        
     </main>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>
