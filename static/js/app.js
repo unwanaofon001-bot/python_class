@@ -1,118 +1,144 @@
-const tableBody = document.getElementById("tasks-table-body");
-const statusFilter = document.getElementById("status-filter");
+// const tasksTableBody = document.getElementById("tasks-table-body");
+// const statusFilter = document.getElementById("status-filter");
+// let allTasks = [];
 
-let allTasks = [];
-
-document.addEventListener("DOMContentLoaded", loadTasks);
-
-
-async function loadTasks() {
-    try {
-        const response = await fetch("/tasks");
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || "Failed to load tasks");
-        }
-
-        if (!Array.isArray(data.tasks)) {
-            throw new Error("The server did not return a valid task list");
-        }
-
-        allTasks = data.tasks;
-
-        displayTasks(allTasks);
-        updateSummaryCards(allTasks);
-
-    } catch (error) {
-        console.error("Error loading tasks:", error);
-
-        tableBody.replaceChildren();
-
-        const row = document.createElement("tr");
-        const cell = document.createElement("td");
-
-        cell.colSpan = 7;
-        cell.textContent =
-            "Unable to load tasks. Check your Flask server and try again.";
-
-        row.appendChild(cell);
-        tableBody.appendChild(row);
-    }
-}
+// document.addEventListener("DOMContentLoaded", loadTasks);
 
 
-function displayTasks(tasks) {
-    tableBody.replaceChildren();
+// async function loadTasks() {
+//     try {
+//         const response = await fetch("/tasks");
 
-    if (tasks.length === 0) {
-        const row = document.createElement("tr");
-        const cell = document.createElement("td");
+//         const data = await response.json();
 
-        cell.colSpan = 7;
-        cell.textContent = "No tasks found.";
+//         if (!response.ok) {
+//             throw new Error(data.message || "Failed to load tasks");
+//         }
 
-        row.appendChild(cell);
-        tableBody.appendChild(row);
+//         if (!Array.isArray(data.tasks)) {
+//             throw new Error("The server did not return a valid task list");
+//         }
 
-        return;
-    }
+//         allTasks = data.tasks;
 
-    tasks.forEach(function(task) {
-        const row = document.createElement("tr");
+//         displayTasks(allTasks);
+//         updateSummaryCards(allTasks);
 
-        const values = [
-            task.title,
-            task.client,
-            task.recipient,
-            task.priority,
-            task.status,
-            task.due_date
-        ];
+//     } catch (error) {
+//         console.error("Error loading tasks:", error);
 
-        values.forEach(function(value) {
-            const cell = document.createElement("td");
+//         tableBody.replaceChildren();
 
-            cell.textContent = value ?? "—";
+//         const row = document.createElement("tr");
+//         const cell = document.createElement("td");
 
-            row.appendChild(cell);
-        });
+//         cell.colSpan = 7;
+//         cell.textContent =
+//             "Unable to load tasks. Check your Flask server and try again.";
 
-        const actionCell = document.createElement("td");
-
-        actionCell.textContent = "—";
-
-        row.appendChild(actionCell);
-
-        tableBody.appendChild(row);
-    });
-}
+//         row.appendChild(cell);
+//         tableBody.appendChild(row);
+//     }
+// }
 
 
-function updateSummaryCards(tasks) {
-    document.getElementById("total-count").textContent = tasks.length;
+// function displayTasks(tasks) {
+//     tableBody.replaceChildren();
 
-    document.getElementById("pending-count").textContent =
-        tasks.filter(function(task) {
-            return task.status === "Pending";
-        }).length;
+//     if (tasks.length === 0) {
+//         const row = document.createElement("tr");
+//         const cell = document.createElement("td");
 
-    document.getElementById("completed-count").textContent =
-        tasks.filter(function(task) {
-            return task.status === "Completed";
-        }).length;
-}
+//         cell.colSpan = 7;
+//         cell.textContent = "No tasks found.";
+
+//         row.appendChild(cell);
+//         tableBody.appendChild(row);
+
+//         return;
+//     }
+
+//     tasks.forEach(function(task) {
+//         const row = document.createElement("tr");
+
+//         const values = [
+//             task.title,
+//             task.client,
+//             task.recipient,
+//             task.priority,
+//             task.status,
+//             task.due_date
+//         ];
+
+//         values.forEach(function(value) {
+//             const cell = document.createElement("td");
+
+//             cell.textContent = value ?? "—";
+
+//             row.appendChild(cell);
+//         });
+
+//         const actionCell = document.createElement("td");
+
+//         actionCell.textContent = "—";
+
+//         row.appendChild(actionCell);
+
+//         tableBody.appendChild(row);
+//     });
+// }
 
 
-statusFilter.addEventListener("change", function() {
-    const selectedStatus = statusFilter.value;
+// function updateSummaryCards(tasks) {
+//     document.getElementById("total-count").textContent = tasks.length;
 
-    const filteredTasks = selectedStatus === "All"
-        ? allTasks
-        : allTasks.filter(function(task) {
-            return task.status === selectedStatus;
-        });
+//     document.getElementById("pending-count").textContent =
+//         tasks.filter(function(task) {
+//             return task.status === "Pending";
+//         }).length;
 
-    displayTasks(filteredTasks);
+//     document.getElementById("completed-count").textContent =
+//         tasks.filter(function(task) {
+//             return task.status === "Completed";
+//         }).length;
+// }
+
+
+// statusFilter.addEventListener("change", function() {
+//     const selectedStatus = statusFilter.value;
+
+//     const filteredTasks = selectedStatus === "All"
+//         ? allTasks
+//         : allTasks.filter(function(task) {
+//             return task.status === selectedStatus;
+//         });
+
+//     displayTasks(filteredTasks);
+// });
+
+const addTaskForm = document.getElementById("add-task-form");
+const taskJSON = JSON.stringify(taskData);
+addTaskForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const title = document.getElementById("task-title").value;
+    const client = document.getElementById("task-client").value;
+    const recipient = document.getElementById("task-recipient").value;
+    const dueDate = document.getElementById("task-due-date").value;
+    const priority = document.getElementById("task-priority").value;
+
+    const taskData = {
+    title: title,
+    client: client,
+    recipient: recipient,
+    due_date: dueDate,
+    priority: priority
+};
+});
+const response = await fetch("/tasks", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: taskJSON
 });

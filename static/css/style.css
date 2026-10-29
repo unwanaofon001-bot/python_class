@@ -7,13 +7,12 @@ body {
 header {
     background-color: darkgreen;
     color: white;
-    text-align: center;
+    text-align: left;
     padding: 20px;
 }
 #summary {
     display: flex;
     color: green; 
-    justify-content: space-around;
     gap: 20px;
     padding: 20px;
     flex-direction: column;
@@ -28,10 +27,11 @@ header {
       
 }
 .start-card {
-    background-color: darkgray;
+    background-color: darkgreen;
     border-radius: 15px;
     padding: 20px;
-    flex: 1;    
+    flex: 1 1 200px;  
+    color: white;  
 }
 .start-card h3 {
     margin: 0;
@@ -47,13 +47,15 @@ main {
     min-height: calc(100vh - 100px);
 }
 #sidebar {
-    width: 200px;
+    width: 300px;
     flex-shrink: 0;
     background-color: gray;
     box-sizing: border-box;
-    padding: 25px;
+    padding: 10px;
+    font-size: 25px;
+    font-family: cursive;
 }
-#dashboard-content {
+.page-content {
     flex: 1;
     min-width: 0;
     padding: 25px;
@@ -62,17 +64,19 @@ main {
     display: flex;
     align-items: center;
     gap: 10px;
+    padding: 10px;
     color: whitesmoke;
     text-decoration: none;
     border-radius: 8px;
+    font-weight: bold;
 }
 #sidebar nav a:hover,
 #sidebar nav a.activate {
     background-color: darkgray;
 }
 .material-symbols-outlined {
-    font-size: 25px;
-    line-height: 2.5;
+    font-size: 35px;
+    line-height: 1;
 }
 /* Task list section */
 #task-list {
