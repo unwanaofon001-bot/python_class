@@ -289,3 +289,26 @@ main {
         padding: 15px;
     }
 }
+.action-button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 5px;
+}
+
+.edit-button {
+    color: darkgreen;
+}
+
+.delete-button {
+    color: #d32f2f;
+}
+
+.action-button:hover {
+    background-color: #e8f5e9;
+}
+
+.action-button .material-symbols-outlined {
+    font-size: 22px;
+}

@@ -1,144 +1,196 @@
-// const tasksTableBody = document.getElementById("tasks-table-body");
-// const statusFilter = document.getElementById("status-filter");
-// let allTasks = [];
+const tableBody = document.getElementById("tasks-table-body");
+const statusFilter = document.getElementById("status-filter");
 
-// document.addEventListener("DOMContentLoaded", loadTasks);
-
-
-// async function loadTasks() {
-//     try {
-//         const response = await fetch("/tasks");
-
-//         const data = await response.json();
-
-//         if (!response.ok) {
-//             throw new Error(data.message || "Failed to load tasks");
-//         }
-
-//         if (!Array.isArray(data.tasks)) {
-//             throw new Error("The server did not return a valid task list");
-//         }
-
-//         allTasks = data.tasks;
-
-//         displayTasks(allTasks);
-//         updateSummaryCards(allTasks);
-
-//     } catch (error) {
-//         console.error("Error loading tasks:", error);
-
-//         tableBody.replaceChildren();
-
-//         const row = document.createElement("tr");
-//         const cell = document.createElement("td");
-
-//         cell.colSpan = 7;
-//         cell.textContent =
-//             "Unable to load tasks. Check your Flask server and try again.";
-
-//         row.appendChild(cell);
-//         tableBody.appendChild(row);
-//     }
-// }
-
-
-// function displayTasks(tasks) {
-//     tableBody.replaceChildren();
-
-//     if (tasks.length === 0) {
-//         const row = document.createElement("tr");
-//         const cell = document.createElement("td");
-
-//         cell.colSpan = 7;
-//         cell.textContent = "No tasks found.";
-
-//         row.appendChild(cell);
-//         tableBody.appendChild(row);
-
-//         return;
-//     }
-
-//     tasks.forEach(function(task) {
-//         const row = document.createElement("tr");
-
-//         const values = [
-//             task.title,
-//             task.client,
-//             task.recipient,
-//             task.priority,
-//             task.status,
-//             task.due_date
-//         ];
-
-//         values.forEach(function(value) {
-//             const cell = document.createElement("td");
-
-//             cell.textContent = value ?? "—";
-
-//             row.appendChild(cell);
-//         });
-
-//         const actionCell = document.createElement("td");
-
-//         actionCell.textContent = "—";
-
-//         row.appendChild(actionCell);
-
-//         tableBody.appendChild(row);
-//     });
-// }
-
-
-// function updateSummaryCards(tasks) {
-//     document.getElementById("total-count").textContent = tasks.length;
-
-//     document.getElementById("pending-count").textContent =
-//         tasks.filter(function(task) {
-//             return task.status === "Pending";
-//         }).length;
-
-//     document.getElementById("completed-count").textContent =
-//         tasks.filter(function(task) {
-//             return task.status === "Completed";
-//         }).length;
-// }
-
-
-// statusFilter.addEventListener("change", function() {
-//     const selectedStatus = statusFilter.value;
-
-//     const filteredTasks = selectedStatus === "All"
-//         ? allTasks
-//         : allTasks.filter(function(task) {
-//             return task.status === selectedStatus;
-//         });
-
-//     displayTasks(filteredTasks);
-// });
+let allTasks = [];
 
 const addTaskForm = document.getElementById("add-task-form");
-const taskJSON = JSON.stringify(taskData);
-addTaskForm.addEventListener("submit", function(event) {
+const formMessage = document.getElementById("form-message");
+
+document.addEventListener("DOMContentLoaded", loadTasks);
+
+ addTaskForm.addEventListener("submit", async function(event) {
     event.preventDefault();
+  
+    try {
+        const title = document.getElementById("task-title").value;
+        const client = document.getElementById("task-client").value;
+        const recipient = document.getElementById("task-recipient").value;
+        const dueDate = document.getElementById("task-due-date").value;
+        const priority = document.getElementById("task-priority").value;
 
-    const title = document.getElementById("task-title").value;
-    const client = document.getElementById("task-client").value;
-    const recipient = document.getElementById("task-recipient").value;
-    const dueDate = document.getElementById("task-due-date").value;
-    const priority = document.getElementById("task-priority").value;
+        const taskData = {
+            title: title,
+            client: client,
+            recipient: recipient,
+            due_date: dueDate,
+            priority: priority
+        };
+        const taskJSON = JSON.stringify(taskData);
+              
+        const response = await fetch("/tasks", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            
+            body: taskJSON 
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || "Failed to create task"); 
+        }
+        formMessage.textContent = data.message || "Task created successfully"
 
-    const taskData = {
-    title: title,
-    client: client,
-    recipient: recipient,
-    due_date: dueDate,
-    priority: priority
-};
+        await loadTasks();
+
+        addTaskForm.reset();
+
+        } catch (error) {
+            console.error("Error creating task:", error);
+            formMessage.textContent = error.message || "Unable to create task. Please try again.";
+        }
+    
+    });  
+
+async function loadTasks() {
+    try {
+         const response = await fetch("/tasks");
+         const data = await response.json();
+
+         if (!response.ok) {
+
+            throw new Error(data.message || "Failed to load tasks");
+         }
+
+         if (!Array.isArray(data.tasks)) {
+             throw new Error("The server did not return a valid task list");
+         }
+
+         allTasks = data.tasks;
+
+         displayTasks(allTasks);
+         updateSummaryCards(allTasks);
+
+    } catch (error) {
+         console.error("Error loading tasks:", error);
+
+         tableBody.replaceChildren();
+
+         const row = document.createElement("tr");
+         const cell = document.createElement("td");
+
+         cell.colSpan = 7;
+         cell.textContent =
+             "Unable to load tasks. Check your Flask server and try again.";
+
+         row.appendChild(cell);
+         tableBody.appendChild(row);
+    } 
+}     
+
+function displayTasks(tasks) {
+    tableBody.replaceChildren();
+
+    if (tasks.length === 0) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+
+        cell.colSpan = 7;
+        cell.textContent = "No tasks found.";
+
+        row.appendChild(cell);
+        tableBody.appendChild(row);
+
+        return;
+    }
+
+    tasks.forEach(function(task) {
+        const row = document.createElement("tr");
+
+        const values = [
+            task.title,
+            task.client,
+            task.recipient,
+            task.priority,
+            task.status,
+            task.due_date
+        ];
+
+        values.forEach(function(value) {
+            const cell = document.createElement("td");
+
+            cell.textContent = value ?? "—";
+
+            row.appendChild(cell);
+        });
+
+        const actionCell = document.createElement("td");
+
+        // Edit button
+        const editButton = document.createElement("button");
+        editButton.type = "button";
+        editButton.className = "action-button edit-button";
+        editButton.dataset.taskId = task.id;
+        editButton.setAttribute("aria-label", `Edit ${task.title}`);
+
+        const editIcon = document.createElement("span");
+        editIcon.className = "material-symbols-outlined";
+        editIcon.textContent = "edit";
+
+        editButton.appendChild(editIcon);
+
+        // Delete button
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "action-button delete-button";
+        deleteButton.dataset.taskId = task.id;
+        deleteButton.setAttribute("aria-label", `Delete ${task.title}`);
+
+        deleteButton.addEventListener("click", function() {
+            console.log("Delete button clicked");
+        });
+
+        const deleteIcon = document.createElement("span");
+        deleteIcon.className = "material-symbols-outlined";
+        deleteIcon.textContent = "delete";
+
+        deleteButton.appendChild(deleteIcon);
+
+        // Add both buttons to the action cell
+        actionCell.appendChild(editButton);
+        actionCell.appendChild(deleteButton);
+
+        row.appendChild(actionCell);
+        tableBody.appendChild(row);
+    });
+}
+
+
+function updateSummaryCards(tasks) {
+    document.getElementById("total-count").textContent = tasks.length;
+
+    document.getElementById("pending-count").textContent =
+        tasks.filter(function(task) {
+            return task.status === "Pending";
+        }).length;
+
+    document.getElementById("completed-count").textContent =
+        tasks.filter(function(task) {
+            return task.status === "Completed";
+        }).length;
+}
+
+
+statusFilter.addEventListener("change", function() {
+    const selectedStatus = statusFilter.value;
+
+    const filteredTasks = selectedStatus === "All"
+        ? allTasks
+        : allTasks.filter(function(task) {
+            return task.status === selectedStatus;
+        });
+
+    displayTasks(filteredTasks);
 });
-const response = await fetch("/tasks", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: taskJSON
-});
+
+    
