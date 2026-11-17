@@ -146,8 +146,34 @@ function displayTasks(tasks) {
         deleteButton.dataset.taskId = task.id;
         deleteButton.setAttribute("aria-label", `Delete ${task.title}`);
 
-        deleteButton.addEventListener("click", function() {
+        deleteButton.addEventListener("click", async function() {
+            const taskId = this.dataset.taskId;
+
+            console.log(taskId)
             console.log("Delete button clicked");
+
+            const userConfirmed = confirm("Are you sure you want to delete this task?");
+
+                if (userConfirmed) {
+                    try {
+                         const response = await fetch(`/tasks/${taskId}`, {
+                            method: "DELETE"
+
+                        });
+                        const data = await response.json();
+                        if (!response.ok) {
+                            throw new Error(data.message || "Failed to delete")
+                        }
+
+                        console.log("Task deleted successfully", taskId)
+                        await loadTasks();
+                    } catch (error) {
+                        console.error("Error deleting task:", error)
+                    }
+                  
+                } else {
+                    console.log("Delete canceled")
+                }    
         });
 
         const deleteIcon = document.createElement("span");
